@@ -1,4 +1,47 @@
+import ClientMonitor from "skywalking-client-js";
+import { BreadcrumbTypes, BreadcrumbsCategorys, TraceAction, TraceBreadcrumbs, TraceDataLog, TraceDataSeverity } from "./type";
+
 export class BaseTrace implements BaseTraceInterface {
+  public breadcrumb: TraceBreadcrumbs = []; // 记录用户行为
+  public maxBreadcrumb = 10; // 最大记录条数
+
+
+  public init () {
+    ClientMonitor.register({
+      collector: "http://localhost:12800",
+      service: "ai-zhenxiang",
+      pagePath: "/column/intro/123",
+      serviceVersion: "v1.0.0",
+      enableSPA: true, // spa
+      vue: Vue, // Vue 对象
+      jsError: false,
+      resourceErrors: false
+    });
+  }
+
+  public saveBreadcrumb(data: TraceBreadcrumbs) {
+    this.breadcrumb.push(data);
+    if (this.breadcrumb.length > this.maxBreadcrumb) {
+      this.breadcrumb.shift()
+    }
+  }
+
+  public onGlobalClick(){
+    const _t = this
+    window.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      const innerHTML = target.innerHTML;
+      const bc: TraceAction = {
+        name: 'click',
+        level: TraceDataSeverity.Normal,
+        type: BreadcrumbTypes.CLICK,
+        category: BreadcrumbsCategorys.User,
+        message: innerHTML,
+        time: getTimestamp(),
+      }
+    })
+  }
+
   public log(log: TraceDataLog) {
     this.saveBreadcrumb({
       name: 'custome-log',
@@ -54,5 +97,36 @@ export class BaseTrace implements BaseTraceInterface {
       dataId: hashCode(`${message}|${tag || ''}`),
       tag
     })
+  }
+
+  public saveError(event: ErrorEvent){
+    const target = event.target || event.srcElement;
+    const isResTarget = isResourceTarget(target as HTMLElement);
+    const nodeName = (target as HTMLElement).nodeName;
+    
+    if (!isResTarget){
+      // ...
+      this.resources.push(traceData)
+      this.breadcrumb.push({
+        name: event.error.name,
+        type: BreadcrumbTypes.CODE_ERROR,
+        category: BreadcrumbsCategorys.Exception,
+        level: TraceDataSeverity.Error,
+        message: event.message,
+        stack: event.error.stack,
+        time: getTimestamp()
+      })
+    } else {
+      // ...
+      this.resources.push(traceData);
+      this.breadcrumb.push({
+        name: traceData.name,
+        type: BreadcrumbTypes.RESOURCE,
+        category: BreadcrumbsCategorys.Exception,
+        level: TraceDataSeverity.Warning,
+        message: event.message,
+        time: getTimestamp()
+      })
+    }
   }
 }

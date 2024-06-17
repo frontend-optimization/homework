@@ -24,7 +24,7 @@ export enum TraceTypes {
 }
 
 // 浏览器类型
-enum BrowserType {
+export enum BrowserType {
   MOBILE = "mobile",
   PC = "pc",
   WEBVIEW = "webview",
@@ -32,20 +32,20 @@ enum BrowserType {
 }
 
 // 浏览器相关字段基类
-type BaseBrowserTrace = {
+export type BaseBrowserTrace = {
   ua: string;
   bt: BrowserType;
 };
 
 // 页面相关字段基类
-type BasePageTrace = {
+export type BasePageTrace = {
   pid: string; // pid 是用户输入网址访问页面加载成功后，直到下一次重新刷新前，只生成一次 UUID
   title?: string;
   url: string;
 };
 
 // 用户相关字段基类
-type BaseUserTrace = {
+export type BaseUserTrace = {
   fpId: string; // 指纹id
   uid?: string | number;
   userName?: string;
@@ -53,7 +53,7 @@ type BaseUserTrace = {
 };
 
 // 日志级别
-enum TraceLevelType {
+export enum TraceLevelType {
   error = "error",
   warn = "warn",
   info = "info",
@@ -61,7 +61,7 @@ enum TraceLevelType {
 }
 
 // 客户端类型
-enum TraceClientTypes {
+export enum TraceClientTypes {
   ANDROID_H5 = "android",
   IOS_H5 = "ios",
   PC_H5 = "pc",
@@ -69,14 +69,14 @@ enum TraceClientTypes {
 }
 
 // 业务相关字段基类
-type BaseAppTrace = {
+export type BaseAppTrace = {
   appId: string;
   appName: string;
   clientType: TraceClientTypes;
   level: TraceLevelType;
 };
 
-type BaseTraceInfo = BaseTrace &
+export type BaseTraceInfo = BaseTrace &
   BaseBrowserTrace &
   BasePageTrace &
   BaseUserTrace &
@@ -84,7 +84,7 @@ type BaseTraceInfo = BaseTrace &
 
 
 // 通用异常数据字段
-type TraceBaseData = {
+export type TraceBaseData = {
   dataId: number;
   name: string;
   message: string;
@@ -93,7 +93,7 @@ type TraceBaseData = {
   level: TraceDataSeverity;
 };
 
-declare enum TraceDataSeverity {
+export declare enum TraceDataSeverity {
   Else = "else", // 其他
   Error = "error",
   Warning = "warning",
@@ -119,12 +119,12 @@ declare enum TraceDataTypes {
 }
 
 // 代码异常错误信息
-type TraceDataCodeError = TraceBaseData & {
+export type TraceDataCodeError = TraceBaseData & {
   stack: [];
 };
 
 // 网络请求类型
-type TraceDataFetch = TraceBaseData & {
+export type TraceDataFetch = TraceBaseData & {
   // 执行时间，用于统计耗时
   elapsedTime: number;
   method: "POST" | "GET";
@@ -134,18 +134,18 @@ type TraceDataFetch = TraceBaseData & {
   status: number;
 };
 
-type TraceDataPromise = TraceBaseData;
-type TraceDataResource = TraceBaseData;
-type TraceDataLog = TraceBaseData & {
+export type TraceDataPromise = TraceBaseData;
+export type TraceDataResource = TraceBaseData;
+export type TraceDataLog = TraceBaseData & {
   tag: string; // 可以当标签使用，也可以当作一段需要标记的字符串
 };
 // PV/UV
-type TraceDataPageView = TraceBaseData & {
+export type TraceDataPageView = TraceBaseData & {
   route: string;
 };
 
 // webVitals 性能收集信息对象
-type TracePerf = {
+export type TracePerf = {
   id: string;
   LCP?: number;
   LCPRating?: TracePerfRating;
@@ -162,7 +162,7 @@ type TracePerf = {
 };
 
 // ***** 基类行为日志信息 ********
-type TraceBaseAction = {
+export type TraceBaseAction = {
   name: string;
   level: TraceDataSeverity;
   time: string;
@@ -171,7 +171,7 @@ type TraceBaseAction = {
 };
 
 // 行为日志
-type TraceAction = TraceBaseAction & {
+export type TraceAction = TraceBaseAction & {
   // 行为动作相关的信息，可以是dom，可以是错误信息，可以是自定义信息
   message?: string;
   // 请求参数
@@ -183,7 +183,7 @@ type TraceAction = TraceBaseAction & {
 };
 
 // 行为日志的类别：用户点击，请求，日志输出，组件生命周期
-enum BreadcrumbsCategorys {
+export enum BreadcrumbsCategorys {
   User = "user",
   Http = "http",
   Debug = "debug",
@@ -192,7 +192,7 @@ enum BreadcrumbsCategorys {
 }
 
 // 异常信息类别
-enum BreadcrumbTypes {
+export enum BreadcrumbTypes {
   ROUTE = "Route",
   CLICK = "UI.Click",
   CONSOLE = "Console",
@@ -204,13 +204,13 @@ enum BreadcrumbTypes {
 }
 
 // 一份错误信息的类型集合
-type TraceTypeData = TraceDataFetch | TraceDataCodeError | TraceDataPromise | TraceDataResource | TraceDataLog | TraceDataPageView
+export type TraceTypeData = TraceDataFetch | TraceDataCodeError | TraceDataPromise | TraceDataResource | TraceDataLog | TraceDataPageView
 
 // 操作行为日志
-type TraceBreadcrumbs = TraceAction[]
+export type TraceBreadcrumbs = TraceAction[]
 
 // 完整的全链路日志
-type TraceData = BaseTraceInfo & {
+export type TraceData = BaseTraceInfo & {
   // 记录错误信息
   data?: TraceTypeData
   // 记录操作行为
